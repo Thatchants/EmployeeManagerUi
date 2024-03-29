@@ -60,6 +60,21 @@ function EmployeeModal({ employee, onClose, onSupervisorClick, onChangeSuperviso
         }
     };
 
+    const handleRemoveSupervisor = async () => {
+        try {
+            await axios.delete(`http://localhost:8080/supervisor-link/${employee.id}`, null, {});
+            onChangeSupervisor();
+            onClose();
+        } catch (error) {
+            if (error.response && error.response.data) {
+                const errorMessage = error.response.data;
+                setError(errorMessage);
+            } else {
+                setError('Error deleting supervisor');
+            }
+        }
+    }
+
     const handleChangeSupervisor = async () => {
         try {
             if (!newSupervisorId) {
@@ -102,7 +117,16 @@ function EmployeeModal({ employee, onClose, onSupervisorClick, onChangeSuperviso
                         <li className="employee-item" onClick={handleSupervisorClick}>
                             <span>{employee.supervisorLink.supervisor.firstName} {employee.supervisorLink.supervisor.lastName}</span>
                             <div>
-                                <button className="change-supervisor-btn" onClick={(e) => { e.stopPropagation(); handleChangeSupervisor(); }}>
+                                <button className="change-supervisor-btn" onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleRemoveSupervisor();
+                                }}>
+                                    Remove Supervisor
+                                </button>
+                                <button className="change-supervisor-btn" onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleChangeSupervisor();
+                                }}>
                                     Change Supervisor
                                 </button>
                                 <select value={newSupervisorId} onChange={handleNewSupervisorChange} onClick={(e) => e.stopPropagation()}>
